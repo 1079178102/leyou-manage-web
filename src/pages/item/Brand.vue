@@ -151,13 +151,20 @@
       },
       getDataFromApi() {
         this.loading = true;
-        this.$http.get("/item/brand/page").then((res) => console.log(res));
-        // // 200ms后返回假数据
-        // window.setTimeout(() => {
-        //   this.items = brandData.slice(0,4);
-        //   this.totalItems = 100
-        //   this.loading = false;
-        // }, 200)
+        this.$http.get("/item/brand/page",{
+          params:{
+            // 搜索条件
+            key: this.search,
+            page: this.pagination.page, // 当前页
+            rows: this.pagination.rowsPerPage, // 每页大小
+            sortBy: this.pagination.sortBy, // 排序字段
+            desc: this.pagination.descending // 是否降序
+          }
+        }).then(res => {
+          let data = res.data;
+          this.items = data.items;
+          this.totalItems = data.total;
+        }).catch(res => console.log("请求失败"));
         this.loading = false;
       }
     }

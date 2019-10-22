@@ -74,20 +74,44 @@
       submit() {
         // 表单校验
         if (this.$refs.brandForm.validate()) {
-          this.brand.categories = this.brand.categories.map(c => c.id);
-          this.brand.letter = this.brand.letter.toUpperCase();
-          // 将数据提交到后台
+          // 定义一个请求参数对象，通过解构表达式来获取brand中的属性
+          console.log(this.brand);
+          const {categories, letter, ...params} = this.brand;
+          // 数据库中只要保存分类的id即可，因此我们队categories的值进行处理,值保留id,并转为字符串
+          params.cids = categories.map(c => c.id).join(",");
+          // 将字母都处理为大写
+          params.letter = letter.toUpperCase();
+          // 将数据发送至后台
           this.$http({
             method: this.isEdit ? 'put' : 'post',
             url: '/item/brand',
-            data: this.$qs.stringify(this.brand)
+            traditional:true,
+            data: this.$qs.stringify(params)
           }).then(() => {
             // 关闭窗口
             this.$message.success("保存成功！");
             this.closeWindow();
+            // this.$emit("close");
           }).catch(() => {
             this.$message.error("保存失败！");
           });
+
+
+          // this.brand.categories = this.brand.categories.map(c => c.id);
+          // this.brand.letter = this.brand.letter.toUpperCase();
+          // // 将数据提交到后台
+          // this.$http({
+          //   method: this.isEdit ? 'put' : 'post',
+          //   url: '/item/brand',
+          //   traditional:true,
+          //   data: this.$qs.stringify(this.brand)
+          // }).then(() => {
+          //   // 关闭窗口
+          //   this.$message.success("保存成功！");
+          //   this.closeWindow();
+          // }).catch(() => {
+          //   this.$message.error("保存失败！");
+          // });
         }
       },
       clear() {
